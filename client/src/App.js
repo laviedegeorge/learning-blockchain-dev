@@ -1,5 +1,5 @@
 import React from "react";
-import SimpleStorageContract from "./contracts/SimpleStorage.json";
+import AdvanceStorageContract from "./contracts/AdvanceStorage.json";
 import getWeb3 from "./getWeb3";
 
 import "./App.css";
@@ -7,7 +7,7 @@ import "./App.css";
 // 0x5e7700ff2730Ad7D2c3ebA4C82B50705f1b23609
 
 const App = () => {
-  const [info, setInfo] = React.useState("");
+  const [info, setInfo] = React.useState([]);
   const [value, setValue] = React.useState("");
   const [state, setState] = React.useState(null);
 
@@ -26,16 +26,16 @@ const App = () => {
 
       // Get the contract instance.
       const networkId = await web3.eth.net.getId();
-      const deployedNetwork = await SimpleStorageContract.networks[networkId];
+      const deployedNetwork = await AdvanceStorageContract.networks[networkId];
       const instance = await new web3.eth.Contract(
-        SimpleStorageContract.abi,
+        AdvanceStorageContract.abi,
         deployedNetwork && deployedNetwork.address
       );
 
       // Set web3, accounts, and contract to the state, and then proceed with an
       // example of interacting with the contract's methods.
       setState({ web3, accounts, contract: instance });
-      await getData(instance);
+      await getAllIds(instance);
     } catch (error) {
       // Catch any errors for any of the above operations.
       alert(
@@ -45,9 +45,9 @@ const App = () => {
     }
   };
 
-  const getData = async (contractInstance) => {
+  const getAllIds = async (contractInstance) => {
     contractInstance.methods
-      .getData()
+      .getAllIds()
       .call()
       .then((res) => {
         setInfo(res);
@@ -57,18 +57,17 @@ const App = () => {
       });
   };
 
-  const setData = async (value) => {
+  const addId = async (id) => {
     state.contract.methods
-      .setData(value)
+      .addId(id)
       .send({ from: state.accounts[0] })
       .then((res) => {
-        console.log(res);
         if (res.transactionHash) {
-          return getData(state.contract);
+          alert(`${value} added!!!`);
         }
       })
-      .then((data) => {
-        console.log(data);
+      .then(() => {
+        getAllIds(state.contract);
       })
       .catch((err) => {
         console.error(err);
@@ -101,23 +100,23 @@ const App = () => {
   return (
     <div className="App">
       <header>
-        <h1> Simple Storage</h1>
+        <h1> Advance Storage</h1>
       </header>
-      <h3>Data: {info}</h3>
+      <h3>Data: {info.join(", ")}</h3>
       <form
         onSubmit={(e) => {
           e.preventDefault();
-          setData(value);
+          addId(parseInt(value));
         }}
       >
         <input
-          type="text"
-          vlaue={value}
+          type="number"
+          value={value}
           onChange={(e) => handleChange(e)}
-          placeholder="Set data"
+          placeholder="Set data (Number)"
         />
         <br />
-        <button>Set data</button>
+        <button>Add ID</button>
       </form>
 
       <footer>
