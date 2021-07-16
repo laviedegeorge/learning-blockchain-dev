@@ -3,9 +3,9 @@
 pragma solidity >=0.7.0 <0.9.0;
 
 contract AdvanceStorage {
-    uint256[] ids;
+    uint256[] public ids;
 
-    function addIds(uint256 _id) public returns (bool) {
+    function addId(uint256 _id) public returns (bool) {
         ids.push(_id);
         return true;
     }
@@ -16,5 +16,9 @@ contract AdvanceStorage {
 
     function getAllIds() public view returns (uint256[] memory) {
         return ids;
+    }
+
+    function length() public view returns (uint256) {
+        return ids.length;
     }
 }
